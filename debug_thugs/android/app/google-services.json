@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "311215492085",
+    "project_id": "stippendmanagement",
+    "storage_bucket": "stippendmanagement.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311215492085:android:a91e4872558997547beebc",
+        "android_client_info": {
+          "package_name": "com.example.debug_thugs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "311215492085-jh4e8hrlrmjm7u4b1omvforb2pbo3gge.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOXSibgTWNkjzIPt29SeE8aDw6pVsnFdY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "311215492085-jh4e8hrlrmjm7u4b1omvforb2pbo3gge.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
