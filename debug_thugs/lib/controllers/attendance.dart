@@ -27,7 +27,7 @@ class _AttendanceState extends State<Attendance> {
     if (widget.text == 'Delete students' ||
         widget.text == 'Attendance' ||
         widget.text == 'Delete class') {
-      reference = obj.getDetailRef2(widget.year, widget.dept);
+      reference = obj.getDetailRef("semister");
       reference.snapshots().listen((event) {
         setState(() {
           for (var i = 0; i < event.docs.length; i++) {
@@ -193,7 +193,7 @@ class _AttendanceState extends State<Attendance> {
           children: <Widget>[
             (widget.text == 'Delete students' || widget.text == 'Attendance')
                 ? DropdownButton(
-                    hint: const Text('select class'),
+                    hint: const Text('select semister'),
                     onChanged: (dynamic name) {
                       setState(() {
                         cls = name;

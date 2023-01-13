@@ -1,21 +1,12 @@
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:debug_thugs/views/utils/theme/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-// import 'package:student_app/controllers/process_data.dart';
-// import 'package:student_app/models.dart';
-// import 'package:student_app/views/admin/admin_widgets.dart';
-// import 'package:student_app/views/utils/theme/theme.dart' as theme;
 import '../../controllers/process_data.dart';
 import '../../models/db_model.dart';
 import '../admin/widgets/admin_bottomnavbar.dart';
-// import '../utils/theme/theme.dart';
-// import '../utils/theme/theme.dart'; as  theme;
-
 
 class LoginPage extends StatefulWidget {
   /// default
@@ -452,10 +443,7 @@ class _LoginPageState extends State<LoginPage>
                     ),
                   ],
                   gradient: LinearGradient(
-                      colors: [
-                        Color(0xFFf7418c),
-                        Color(0xFFfbab66)
-                      ],
+                      colors: [Color(0xFFf7418c), Color(0xFFfbab66)],
                       begin: FractionalOffset(0.2, 0.2),
                       end: FractionalOffset(1.0, 1.0),
                       stops: [0.0, 1.0],
@@ -720,10 +708,7 @@ class _LoginPageState extends State<LoginPage>
                     ),
                   ],
                   gradient: LinearGradient(
-                      colors: [
-                        Color(0xFFf7418c),
-                        Color(0xFFfbab66)
-                      ],
+                      colors: [Color(0xFFf7418c), Color(0xFFfbab66)],
                       begin: FractionalOffset(0.2, 0.2),
                       end: FractionalOffset(1.0, 1.0),
                       stops: [0.0, 1.0],
@@ -734,10 +719,7 @@ class _LoginPageState extends State<LoginPage>
                   highlightColor: Colors.transparent,
                   splashColor: Color(0xFFf7418c),
                   onPressed: () {
-                    processKey();
-                    if (staffFormKey.currentState!.validate()) {
-                      validateKey();
-                    }
+                    adminAuth();
                   },
                   child: const Padding(
                     padding:
