@@ -5,9 +5,9 @@ import '../models/db_model.dart';
 
 /// attendance page logic
 class Attendance extends StatefulWidget {
-  final String? year, dept, text;
+  final String? year, dept, text='Attendance';
 
-  const Attendance(this.year, this.dept, this.text);
+  const Attendance(this.year, this.dept);
 
   @override
   _AttendanceState createState() => _AttendanceState();
@@ -27,7 +27,7 @@ class _AttendanceState extends State<Attendance> {
     if (widget.text == 'Delete students' ||
         widget.text == 'Attendance' ||
         widget.text == 'Delete class') {
-      reference = obj.getDetailRef("semister");
+      reference = obj.getDetailRef2(widget.year, widget.dept);
       reference.snapshots().listen((event) {
         setState(() {
           for (var i = 0; i < event.docs.length; i++) {
@@ -75,6 +75,7 @@ class _AttendanceState extends State<Attendance> {
   void _getStudent() {
     _clearItem();
     var ref = obj.getProfile(cls, widget.year, widget.dept);
+    print(ref);
     ref.snapshots().listen((event) {
       setState(() {
         for (var i = 0; i < event.docs.length; i++) {
@@ -221,8 +222,12 @@ class _AttendanceState extends State<Attendance> {
                             ? Colors.lightBlueAccent
                             : Colors.white,
                         child: ListTile(
-                          title: Text(item[index].name!),
-                          subtitle: Text(item[index].rollNo),
+                          title: Text(
+                            item[index].name!,
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          subtitle: Text(item[index].rollNo,
+                              style: TextStyle(color: Colors.black)),
                           onTap: () {
                             setState(() {
                               item[index].isSelected = false;

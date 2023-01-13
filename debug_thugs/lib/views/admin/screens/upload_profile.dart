@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:debug_thugs/controllers/process_data.dart';
+import 'package:debug_thugs/views/student/screens/profile.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -22,10 +24,10 @@ class _UploadProfile extends State<UploadProfile> {
       regNo,
       email,
       phoneNo,
-      blood,
+      from,
+      amount,
       batch,
       dept,
-      address,
       dob;
   File? _image;
   String? cls;
@@ -34,6 +36,50 @@ class _UploadProfile extends State<UploadProfile> {
   final picker = ImagePicker();
   final reference = FirebaseFirestore.instance;
   String? dep, yer;
+  var _year = [
+    '2003',
+    '2004',
+    '2005',
+    '2006',
+    '2007',
+    '2008',
+    '2009',
+    '2010',
+    '2011',
+    '2012',
+    '2013',
+    '2014',
+    '2015',
+    '2016',
+    '2017',
+    '2018',
+    '2019',
+    '2020',
+    '2021',
+    '2022',
+    '2023'
+  ];
+  String? _currentItemSelected2 = '2023';
+  var _finance = [
+    'Yes',
+    'No',
+  ];
+  String? _currentItemSelected4 = 'Yes';
+  var _months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
+  String? _currentItemSelected = 'January';
   List<Contents> year = [];
   List<Contents> department = [];
   List<Contents> classes = [];
@@ -65,70 +111,6 @@ class _UploadProfile extends State<UploadProfile> {
     });
   }
 
-  Future getImage() async {
-    try {
-      var image = await picker.pickImage(
-          source: ImageSource.gallery, maxWidth: 200.0, maxHeight: 200.0);
-
-      if (image != null) {
-        ImageCropper().cropImage(sourcePath: image.path)
-            .then((result) => {
-            setState(() {
-              _image = File(result!.path);
-            })
-          }
-        );
-      }
-
-
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        behavior: SnackBarBehavior.floating,
-        content: Text('No image selected. Please select a image.'),
-      ));
-    }
-  }
-
-  Future upload(BuildContext context) async {
-    if (formKey.currentState!.validate()) {
-      try {
-        var firebaseStorageRef =
-            FirebaseStorage.instance.ref().child('profile/$batch/$dept/$regNo');
-        var uploadTask = firebaseStorageRef.putFile(_image!);
-        var url = await (await uploadTask).ref.getDownloadURL();
-
-        setState(() {
-          profileUrl = url.toString();
-          print("Hello World");
-          print(url);
-          print(profileUrl);
-          update();
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          duration: Duration(seconds: 1),
-          content: Text('Profile Picture Uploaded'),
-        ));
-
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Submitted Successfully'),
-        ));
-        formKey.currentState!.reset();
-        setState(() {
-          _image = null;
-        });
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Select a profile picture'),
-        ));
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Invalid Details'),
-      ));
-    }
-  }
-
   Future update() async {
     FirebaseFirestore.instance
         .collection('collage')
@@ -143,13 +125,14 @@ class _UploadProfile extends State<UploadProfile> {
       'Regno': regNo,
       'Email': email,
       'PhoneNo': phoneNo,
-      'BloodGroup': blood,
       'Batch': batch,
+      'yearNo': _currentItemSelected2,
+      'Month': _currentItemSelected,
       'Department': dept,
-      'Address': address,
-      'ProfileUrl': profileUrl,
       'DOB': dob,
-      'Class': cls
+      'Class': cls,
+      'Financial assistance from': from,
+      'Financial Amount': amount
     });
   }
 
@@ -177,6 +160,60 @@ class _UploadProfile extends State<UploadProfile> {
       },
       onSaved: (String? value) {
         name = value!;
+      },
+      textInputAction: TextInputAction.next,
+    );
+  }
+
+  Widget buildfinancefromField() {
+    return TextFormField(
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(5.0),
+          ),
+        ),
+        labelText: 'Financial assistance from',
+        hintText: 'Google',
+        contentPadding: EdgeInsets.all(15.0),
+        filled: true,
+      ),
+      maxLength: 20,
+      validator: (String? value) {
+        if (value!.isEmpty) {
+          return 'Financial assistance from is required';
+        }
+        return null;
+      },
+      onSaved: (String? value) {
+        from = value!;
+      },
+      textInputAction: TextInputAction.next,
+    );
+  }
+
+  Widget buildfinanceamountField() {
+    return TextFormField(
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(5.0),
+          ),
+        ),
+        labelText: 'Amount',
+        hintText: '100000',
+        contentPadding: EdgeInsets.all(15.0),
+        filled: true,
+      ),
+      maxLength: 20,
+      validator: (String? value) {
+        if (value!.isEmpty) {
+          return 'Amount is required';
+        }
+        return null;
+      },
+      onSaved: (String? value) {
+        amount = value!;
       },
       textInputAction: TextInputAction.next,
     );
@@ -296,31 +333,6 @@ class _UploadProfile extends State<UploadProfile> {
     );
   }
 
-  Widget buildBloodGroupField() {
-    return TextFormField(
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(5.0),
-          ),
-        ),
-        labelText: 'Blood Group',
-        hintText: 'Ex: O Positive',
-        contentPadding: EdgeInsets.all(15.0),
-        filled: true,
-      ),
-      validator: (String? value) {
-        if (value!.isEmpty) {
-          return 'Blood Group Required';
-        }
-        return null;
-      },
-      onSaved: (String? value) {
-        blood = value!.toUpperCase();
-      },
-    );
-  }
-
   Widget buildBatchDropDown() {
     return DropdownButton(
       hint: const Text('select year'),
@@ -339,6 +351,66 @@ class _UploadProfile extends State<UploadProfile> {
     );
   }
 
+  Widget buildyearDropDown() {
+    return DropdownButton<String>(
+      items: _year.map((String dropDownStringItem2) {
+        return DropdownMenuItem<String>(
+          value: dropDownStringItem2,
+          child: Text(
+            dropDownStringItem2,
+            style: TextStyle(fontSize: 16.5),
+          ),
+        );
+      }).toList(),
+      onChanged: (String? newValueSelected2) {
+        setState(() {
+          _currentItemSelected2 = newValueSelected2;
+        });
+      },
+      value: _currentItemSelected2,
+    );
+  }
+
+  Widget buildmonthDropDown() {
+    return DropdownButton<String>(
+      items: _months.map((String dropDownStringItem) {
+        return DropdownMenuItem<String>(
+          value: dropDownStringItem,
+          child: Text(
+            dropDownStringItem,
+            style: TextStyle(fontSize: 16.5),
+          ),
+        );
+      }).toList(),
+      onChanged: (String? newValueSelected) {
+        setState(() {
+          _currentItemSelected = newValueSelected;
+        });
+      },
+      value: _currentItemSelected,
+    );
+  }
+
+  Widget buildfinicialDropDown() {
+    return DropdownButton<String>(
+      items: _finance.map((String dropDownStringItem4) {
+        return DropdownMenuItem<String>(
+          value: dropDownStringItem4,
+          child: Text(
+            dropDownStringItem4,
+            style: TextStyle(fontSize: 16.5),
+          ),
+        );
+      }).toList(),
+      onChanged: (String? newValueSelected4) {
+        setState(() {
+          _currentItemSelected4 = newValueSelected4;
+        });
+      },
+      value: _currentItemSelected4,
+    );
+  }
+
   Widget buildDeptDropDown() {
     return DropdownButton(
       hint: const Text('select department'),
@@ -354,32 +426,6 @@ class _UploadProfile extends State<UploadProfile> {
                 child: Text(e.name!),
               ))
           .toList(),
-    );
-  }
-
-  Widget buildAddressField() {
-    return TextFormField(
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(5.0),
-          ),
-        ),
-        labelText: 'Address',
-        hintText: 'Ex: 23,Dubai kuruku santhu, dubai',
-        contentPadding: EdgeInsets.all(15.0),
-        filled: true,
-      ),
-      maxLines: 8,
-      validator: (String? value) {
-        if (value!.isEmpty) {
-          return 'Address Required';
-        }
-        return null;
-      },
-      onSaved: (String? value) {
-        address = value!;
-      },
     );
   }
 
@@ -466,41 +512,6 @@ class _UploadProfile extends State<UploadProfile> {
     );
   }
 
-  Widget uploadProfilePic() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Align(
-          alignment: Alignment.center,
-          child: InkWell(
-            onTap: () {
-              getImage();
-            },
-            child: CircleAvatar(
-              radius: 70,
-              backgroundColor: const Color(0xff476cfb),
-              child: ClipOval(
-                child: SizedBox(
-                  width: 137.0,
-                  height: 137.0,
-                  child: (_image != null)
-                      ? Image.file(
-                          _image!,
-                          fit: BoxFit.fill,
-                        )
-                      : Image.asset(
-                          'assets/noimage.png',
-                          fit: BoxFit.fill,
-                        ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -513,12 +524,12 @@ class _UploadProfile extends State<UploadProfile> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  uploadProfilePic(),
-                  const SizedBox(height: 10),
                   buildNameField(),
                   const SizedBox(height: 10),
                   buildRollNoField(),
                   const SizedBox(height: 10),
+                  buildEmailField(),
+                  const SizedBox(height: 20),
                   buildRegNoField(),
                   const SizedBox(height: 10),
                   buildPhoneField(),
@@ -529,15 +540,29 @@ class _UploadProfile extends State<UploadProfile> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         const Text(
-                          'BATCH',
+                          'Year',
                           style: TextStyle(),
                         ),
                         buildBatchDropDown()
                       ]),
-                  const SizedBox(height: 10),
-                  buildEmailField(),
-                  const SizedBox(height: 10),
-                  buildBloodGroupField(),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        const Text(
+                          'Year No',
+                          style: TextStyle(),
+                        ),
+                        buildyearDropDown()
+                      ]),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        const Text(
+                          'Month',
+                          style: TextStyle(),
+                        ),
+                        buildmonthDropDown()
+                      ]),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -553,12 +578,30 @@ class _UploadProfile extends State<UploadProfile> {
                       ? retrieveClasses(batch, dept)
                       : Container(),
                   const SizedBox(height: 10),
-                  buildAddressField(),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        const Text(
+                          'Other finicial assistance',
+                          style: TextStyle(),
+                        ),
+                        buildfinicialDropDown()
+                      ]),
+                  const SizedBox(height: 10),
+                  (_currentItemSelected4 == 'Yes')
+                      ? buildfinancefromField()
+                      : Container(),
+                  const SizedBox(height: 10),
+                  (_currentItemSelected4 == 'Yes')
+                      ? buildfinanceamountField()
+                      : Container(),
                   const SizedBox(height: 10),
                   OutlinedButton(
                     onPressed: () {
                       formKey.currentState!.save();
-                      upload(context);
+                      update();
+                      Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => ProcessData(regNo, cls, dept, batch)));
                     },
                     child: const Text('Submit',
                         style: TextStyle(
