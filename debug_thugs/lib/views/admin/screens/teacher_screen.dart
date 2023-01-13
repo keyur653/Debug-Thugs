@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../Models/db_model.dart';
-import 'add_details.dart';
-import 'attendance.dart';
+import '../../../Models/db_model.dart';
 
-class GetDetails extends StatefulWidget {
-  final String text;
 
-  const GetDetails(this.text);
+class TeacherScreen extends StatefulWidget {
+
 
   @override
-  _GetDetailsState createState() => _GetDetailsState();
+  _TeacherScreenState createState() => _TeacherScreenState();
 }
 
-class _GetDetailsState extends State<GetDetails> {
+class _TeacherScreenState extends State<TeacherScreen> {
   List<Contents> year = [];
   List<Contents> department = [];
   String? yer, dep, cls;
@@ -87,27 +84,6 @@ class _GetDetailsState extends State<GetDetails> {
         TextButton(
           style: const ButtonStyle(),
           onPressed: () {
-            // if (widget.text == 'Attendance') {
-            //   Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //           builder: (context) => Attendance(yer, dep, widget.text)));
-            // } else if (widget.text == 'Add class') {
-            //   Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //           builder: (context) => AddDetails(yer, dep)));
-            // } else if (widget.text == 'Delete students') {
-            //   Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //           builder: (context) => Attendance(yer, dep, widget.text)));
-            // } else if (widget.text == 'Delete class') {
-            //   Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //           builder: (context) => Attendance(yer, dep, widget.text)));
-            // }
           },
           child: const Text(
             'Enter',

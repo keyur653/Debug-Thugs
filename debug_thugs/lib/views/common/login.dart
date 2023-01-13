@@ -1,5 +1,9 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:debug_thugs/views/admin/admin_screens.dart';
+import 'package:debug_thugs/views/admin/screens/hod_screen.dart';
+import 'package:debug_thugs/views/admin/screens/supervisor_screen.dart';
+import 'package:debug_thugs/views/admin/screens/teacher_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -42,9 +46,8 @@ class _LoginPageState extends State<LoginPage>
   DatabaseReference dbobj = DatabaseReference();
 
   //Lists
-  List<String> details = [];
-  List<Contents> cls = [];
   List<Contents> keys1 = [];
+  String? _key;
 
   //Variables
   bool _obscureTextLogin = true;
@@ -52,107 +55,6 @@ class _LoginPageState extends State<LoginPage>
   bool? valid;
   Color left = Colors.black;
   Color right = Colors.white;
-  String? _batch, _dept, _regno, password, foundclass, registerNo;
-
-  void formValidation() {
-    registerNo = registerNoController.text;
-    _batch = '20${registerNo!.substring(4, 6)}';
-    _dept = registerNo!.substring(6, 9);
-    _regno = registerNo;
-    switch (_dept) {
-      case '101':
-        {
-          _dept = 'AE';
-        }
-        break;
-      case '102':
-        {
-          _dept = 'AUTOMOBILE';
-        }
-        break;
-      case '103':
-        {
-          _dept = 'CIVIL';
-        }
-        break;
-      case '104':
-        {
-          _dept = 'CSE';
-        }
-        break;
-      case '105':
-        {
-          _dept = 'EEE';
-        }
-        break;
-      case '106':
-        {
-          _dept = 'ECE';
-        }
-        break;
-      case '114':
-        {
-          _dept = 'MECH';
-        }
-        break;
-      case '121':
-        {
-          _dept = 'BIOMEDICAL';
-        }
-        break;
-    }
-    listClass();
-  }
-
-  void listClass() {
-    reference1 = reference
-        .collection('collage')
-        .doc('entity')
-        .collection('class')
-        .doc(_dept)
-        .collection(_batch!);
-    // reference.collection('class').document('$_dept').collection('$_batch');
-    reference1.snapshots().listen((event) {
-      cls.clear();
-      setState(() {
-        for (var i = 0; i < event.docs.length; i++) {
-          cls.add(Contents.fromSnapshot(event.docs[i]));
-        }
-        loadPassword();
-      });
-    });
-  }
-
-  void loadPassword() async {
-    var reff1 = reference
-        .collection('collage')
-        .doc('student')
-        .collection(_dept!)
-        .doc(_batch);
-    for (var i = 0; i < cls.length; i++) {
-      await reff1
-          .collection(cls[i].name ?? "unknown")
-          .where('Regno', isEqualTo: _regno)
-          .get()
-          .then((value) {
-        if (value.docs.isNotEmpty) {
-          for (var element in value.docs) {
-            password = element.data()['DOB'].toString();
-            if (password != studentPasswordController.text) {
-              invalidSnackBar('Password is incorrect');
-            } else {
-              foundclass = cls[i].name;
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ProcessData(_regno, foundclass)),
-              );
-            }
-          }
-        }
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -223,15 +125,6 @@ class _LoginPageState extends State<LoginPage>
   @override
   void initState() {
     super.initState();
-    processKey();
-    getUser().then((user) {
-      if (user != null) {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => AdminBottomNav()),
-        );
-      }
-    });
-
     _pageController = PageController(keepPage: true);
   }
 
@@ -331,95 +224,104 @@ class _LoginPageState extends State<LoginPage>
                 ),
                 child: SizedBox(
                   width: 300.0,
-                  height: 220.0,
+                  height: 310.0,
                   child: SingleChildScrollView(
                     child: Form(
                       key: studentFormKey,
                       child: Column(
                         children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 15.0,
-                                bottom: 15.0,
-                                left: 25.0,
-                                right: 25.0),
-                            child: TextFormField(
-                              autocorrect: false,
-                              maxLength: 12,
-                              keyboardType: TextInputType.number,
-                              style: const TextStyle(fontSize: 16.0),
-                              controller: registerNoController,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                icon: Icon(
-                                  Icons.person,
-                                  size: 22.0,
+                          const Divider(
+                            thickness: 2.0,
+                          ),
+                          SizedBox(
+                            height: 89,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 10.0,
+                                  bottom: 10.0,
+                                  left: 25.0,
+                                  right: 25.0),
+                              child: TextFormField(
+                                autocorrect: false,
+                                controller: emailAddressController,
+                                keyboardType: TextInputType.emailAddress,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.deny(
+                                      RegExp(r'\s\b|\b\s'))
+                                ],
+                                style: const TextStyle(fontSize: 16.0),
+                                textInputAction: TextInputAction.next,
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  icon: Icon(
+                                    FontAwesomeIcons.envelope,
+                                  ),
+                                  hintText: 'Email Address',
+                                  hintStyle: TextStyle(fontSize: 16.0),
                                 ),
-                                hintText: 'Register No',
-                                hintStyle: TextStyle(fontSize: 17.0),
+                                validator: (String? input) {
+                                  if (input!.isEmpty) {
+                                    return 'Enter Email Address';
+                                  } else if (!RegExp(
+                                          r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+                                      .hasMatch(input)) {
+                                    return 'Valid Email Required';
+                                  }
+                                  return null;
+                                },
                               ),
-                              validator: (input) {
-                                if (input!.isEmpty) {
-                                  return 'Enter Register No';
-                                }
-
-                                return null;
-                              },
-                              textInputAction: TextInputAction.next,
                             ),
                           ),
                           const Divider(
                             thickness: 2.0,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 15.0,
-                                bottom: 15.0,
-                                left: 25.0,
-                                right: 25.0),
-                            child: TextFormField(
-                              autocorrect: false,
-                              maxLength: 10,
-                              obscureText: _obscureTextLogin,
-                              controller: studentPasswordController,
-                              style: const TextStyle(
-                                fontSize: 16.0,
-                              ),
-                              onFieldSubmitted: (input) {
-                                if (studentFormKey.currentState!.validate()) {
-                                  formValidation();
-                                }
-                              },
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                icon: const Icon(
-                                  FontAwesomeIcons.lock,
-                                  size: 22.0,
-                                ),
-                                hintText: 'Password',
-                                hintStyle: const TextStyle(fontSize: 17.0),
-                                suffixIcon: GestureDetector(
-                                  onTap: _toggleLogin,
-                                  child: Icon(
-                                    _obscureTextLogin
-                                        ? FontAwesomeIcons.eye
-                                        : FontAwesomeIcons.eyeSlash,
-                                    size: 15.0,
+                          SizedBox(
+                            height: 89,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 10.0,
+                                  bottom: 10.0,
+                                  left: 25.0,
+                                  right: 25.0),
+                              child: TextFormField(
+                                autocorrect: false,
+                                controller: staffPasswordController,
+                                obscureText: _obscureTextSignup,
+                                style: const TextStyle(fontSize: 16.0),
+                                validator: (input) {
+                                  if (input!.isEmpty) {
+                                    return 'Enter Password';
+                                  }
+                                  return null;
+                                },
+                                onFieldSubmitted: (input) {},
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.deny(
+                                      RegExp(r'\s\b|\b\s'))
+                                ],
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  icon: const Icon(
+                                    FontAwesomeIcons.lock,
+                                  ),
+                                  hintText: 'Password',
+                                  hintStyle: const TextStyle(fontSize: 16.0),
+                                  suffixIcon: GestureDetector(
+                                    onTap: _toggleSignup,
+                                    child: Icon(
+                                      _obscureTextSignup
+                                          ? FontAwesomeIcons.eye
+                                          : FontAwesomeIcons.eyeSlash,
+                                      size: 15.0,
+                                    ),
                                   ),
                                 ),
                               ),
-                              validator: (input) {
-                                if (input!.isEmpty) {
-                                  return 'Enter Password';
-                                } else if (!RegExp(r'^[0-9/-]{10}$')
-                                    .hasMatch(input)) {
-                                  return 'Password is incorrect';
-                                }
-
-                                return null;
-                              },
                             ),
                           ),
+                          SizedBox(
+                            height: 10,
+                          )
                         ],
                       ),
                     ),
@@ -427,7 +329,7 @@ class _LoginPageState extends State<LoginPage>
                 ),
               ),
               Container(
-                margin: const EdgeInsets.only(top: 210.0),
+                margin: const EdgeInsets.only(top: 300.0),
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(5.0)),
                   boxShadow: <BoxShadow>[
@@ -450,12 +352,11 @@ class _LoginPageState extends State<LoginPage>
                       tileMode: TileMode.clamp),
                 ),
                 child: MaterialButton(
+                  //Button field
                   highlightColor: Colors.transparent,
                   splashColor: Color(0xFFf7418c),
                   onPressed: () {
-                    if (studentFormKey.currentState!.validate()) {
-                      formValidation();
-                    }
+                    studentAuth();
                   },
                   child: const Padding(
                     padding:
@@ -477,29 +378,6 @@ class _LoginPageState extends State<LoginPage>
     );
   }
 
-  void processKey() {
-    var collRef = FirebaseFirestore.instance.collection('key');
-    collRef.snapshots().listen((event) {
-      setState(() {
-        for (var i = 0; i < event.docs.length; i++) {
-          keys1.add(Contents.fromSnapshot(event.docs[i]));
-        }
-      });
-    });
-  }
-
-  void validateKey() {
-    for (var i = 0; i < keys1.length; i++) {
-      if (keys1[i].name == keyController.text) {
-        validSnackBar('Loading...');
-        adminAuth();
-        break;
-      } else {
-        invalidSnackBar('invalid key');
-      }
-    }
-  }
-
   Future<User?> getUser() async {
     return _auth.currentUser;
   }
@@ -518,9 +396,45 @@ class _LoginPageState extends State<LoginPage>
         ),
       );
     } finally {
-      if (user != null) {
+      if (user != null && keyController.text == "101") {
+        await Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) =>  TeacherScreen()),
+        );
+      }else if (user != null && keyController.text == "102") {
+        await Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const Supervisor()),
+        );
+      } else if (user != null && keyController.text == "103") {
+        await Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const HodScreen()),
+        );
+      } else if (user != null) {
         await Navigator.of(context).push(
           MaterialPageRoute(builder: (_) => AdminBottomNav()),
+        );
+      } else {
+        invalidSnackBar('invalid user');
+      }
+    }
+  }
+
+  void studentAuth() async {
+    User? user;
+    try {
+      user = (await _auth.signInWithEmailAndPassword(
+              email: emailAddressController.text,
+              password: staffPasswordController.text))
+          .user;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    } finally {
+      if (user != null) {
+        await Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => UploadProfile()),
         );
       } else {
         invalidSnackBar('invalid user');
@@ -553,12 +467,12 @@ class _LoginPageState extends State<LoginPage>
                           SizedBox(
                             height: 89,
                             child: Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 10.0,
-                                  bottom: 10.0,
-                                  left: 25.0,
-                                  right: 25.0),
-                              child: TextFormField(
+                                padding: const EdgeInsets.only(
+                                    top: 10.0,
+                                    bottom: 10.0,
+                                    left: 25.0,
+                                    right: 25.0),
+                                child:  TextFormField(
                                 controller: keyController,
                                 keyboardType: TextInputType.visiblePassword,
                                 textCapitalization: TextCapitalization.words,
@@ -584,9 +498,7 @@ class _LoginPageState extends State<LoginPage>
                                   }
                                   return null;
                                   // return null;
-                                },
-                              ),
-                            ),
+                                }),)
                           ),
                           const Divider(
                             thickness: 2.0,
@@ -652,12 +564,7 @@ class _LoginPageState extends State<LoginPage>
                                   }
                                   return null;
                                 },
-                                onFieldSubmitted: (input) {
-                                  processKey();
-                                  if (staffFormKey.currentState!.validate()) {
-                                    validateKey();
-                                  }
-                                },
+                                onFieldSubmitted: (input) {},
                                 inputFormatters: [
                                   FilteringTextInputFormatter.deny(
                                       RegExp(r'\s\b|\b\s'))

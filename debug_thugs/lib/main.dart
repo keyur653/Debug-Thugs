@@ -70,11 +70,9 @@ class _MyAppState extends State<MyApp> {
   Widget route() {
     if (onBoard == 0 || onBoard == null) {
       return OnBoardingPage();
-    } else if (initScreen == '' || initScreen == null) {
+    } else  {
       return LoginPage();
-    } else {
-      return ProcessData(initScreen, classFound);
-    }
+    } 
   }
 
   Future<bool> getSharedVal() async {

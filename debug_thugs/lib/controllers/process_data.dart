@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:debug_thugs/views/student/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:student_app/views/student/student_widgets.dart';
@@ -7,9 +8,9 @@ import '../views/student/widgets/student_bottomnavbar.dart';
 
 /// this is the initial state which fetches info related to starting the app
 class ProcessData extends StatefulWidget {
-  final String? _regno, foundclass;
+  final String? _regno, _class, _dept,_batch;
 
-  const ProcessData(this._regno, this.foundclass);
+  const ProcessData(this._regno, this._class, this._dept, this._batch);
 
   @override
   _ProcessDataState createState() => _ProcessDataState();
@@ -22,61 +23,13 @@ class _ProcessDataState extends State<ProcessData> {
   final Future<SharedPreferences> _preference = SharedPreferences.getInstance();
 
   Future<List> stream() async {
-    final preference = await _preference;
-    await preference.setString('username', widget._regno!);
-    await preference.setString('foundedclass', widget.foundclass!);
-
-    _batch = '20${widget._regno!.substring(4, 6)}';
-    _dept = widget._regno!.substring(6, 9);
-    switch (_dept) {
-      case '101':
-        {
-          _dept = 'AE';
-        }
-        break;
-      case '102':
-        {
-          _dept = 'AUTOMOBILE';
-        }
-        break;
-      case '103':
-        {
-          _dept = 'CIVIL';
-        }
-        break;
-      case '104':
-        {
-          _dept = 'CSE';
-        }
-        break;
-      case '105':
-        {
-          _dept = 'EEE';
-        }
-        break;
-      case '106':
-        {
-          _dept = 'ECE';
-        }
-        break;
-      case '114':
-        {
-          _dept = 'MECH';
-        }
-        break;
-      case '121':
-        {
-          _dept = 'BIOMEDICAL';
-        }
-        break;
-    }
 
     reference
         .collection('collage')
         .doc('student')
-        .collection(_dept!)
-        .doc(_batch)
-        .collection(widget.foundclass!)
+        .collection(widget._dept!)
+        .doc(widget._batch)
+        .collection(widget._class!)
         .doc(widget._regno)
         .snapshots()
         .listen((event) async {
@@ -88,11 +41,9 @@ class _ProcessDataState extends State<ProcessData> {
         ..add(event.data()!['DOB'])
         ..add(event.data()!['Batch'])
         ..add(event.data()!['Email'])
-        ..add(event.data()!['BloodGroup'])
         ..add(event.data()!['Department'])
-        ..add(event.data()!['Address'])
-        ..add(event.data()!['ProfileUrl'])
-        ..add(event.data()!['Class']);
+        ..add(event.data()!['Class'])
+        ..add(event.data()!['Month']);
 
       reference
           .collection('collage')
@@ -109,7 +60,7 @@ class _ProcessDataState extends State<ProcessData> {
           // print('$days' + '********');
         }
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => StudentBottomNav(details:details, days:days)),
+          MaterialPageRoute(builder: (_) => Profile(details: details)),
         );
       });
     });

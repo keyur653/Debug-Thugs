@@ -1,3 +1,4 @@
+import 'package:debug_thugs/views/admin/admin_screens.dart';
 import 'package:flutter/material.dart';
 
 class Profile extends StatefulWidget {
@@ -19,22 +20,75 @@ class _ProfileState extends State<Profile> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                CircleAvatar(foregroundImage: NetworkImage(widget.details[10]),radius: 110,backgroundColor: Colors.transparent,),
-               
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
+                    SizedBox(
+                      height: 15,
+                    ),
                     profileCardView('Name :  ${widget.details[0]}'),
+                    SizedBox(
+                      height: 5,
+                    ),
                     profileCardView(
                         'Roll no : ${widget.details[1].toString().toUpperCase()}'),
+                    SizedBox(
+                      height: 5,
+                    ),
                     profileCardView('Register no : ${widget.details[2]}'),
+                    SizedBox(
+                      height: 5,
+                    ),
                     profileCardView('Phone number : ${widget.details[3]}'),
+                    SizedBox(
+                      height: 5,
+                    ),
                     profileCardView('DOB :  ${widget.details[4]}'),
+                    SizedBox(
+                      height: 5,
+                    ),
                     profileCardView('Batch :  ${widget.details[5]}'),
+                    SizedBox(
+                      height: 5,
+                    ),
                     profileCardView('Email :  ${widget.details[6]}'),
-                    profileCardView('Blood group :  ${widget.details[7]}'),
-                    profileCardView('Department :  ${widget.details[8]}'),
-                    profileCardView('Address :  ${widget.details[9]}'),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    profileCardView('Department :  ${widget.details[7]}'),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    profileCardView('Class :  ${widget.details[8]}'),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    profileCardView('Month :  ${widget.details[9]}'),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => UploadProfile()),
+                          );
+                        },
+                        child: const Text('Apply for next month',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ))),
+                    // OutlinedButton(
+                    // onPressed: () {
+                    //   Navigator.pop(context);
+                    // },
+                    // child: const Text('Apply for next month',
+                    //     style: TextStyle(
+                    //       fontSize: 16,
+                    //     )),)
+                    // profileCardView('Month :  ${widget.details[9]}'),
+                    // SizedBox(
+                    //   height: 5,
+                    // ),
                   ],
                 ),
               ],
