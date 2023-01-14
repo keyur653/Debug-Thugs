@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:debug_thugs/views/admin/admin_screens.dart';
+import 'package:debug_thugs/views/admin/admin_widgets.dart';
 import 'package:debug_thugs/views/admin/screens/hod_screen.dart';
 import 'package:debug_thugs/views/admin/screens/supervisor_screen.dart';
 import 'package:debug_thugs/views/admin/screens/teacher_screen.dart';
@@ -402,11 +403,11 @@ class _LoginPageState extends State<LoginPage>
         );
       }else if (user != null && keyController.text == "102") {
         await Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const Supervisor()),
+          MaterialPageRoute(builder: (_) =>  Supervisor()),
         );
       } else if (user != null && keyController.text == "103") {
         await Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const HodScreen()),
+          MaterialPageRoute(builder: (_) => HodScreen()),
         );
       } else if (user != null) {
         await Navigator.of(context).push(

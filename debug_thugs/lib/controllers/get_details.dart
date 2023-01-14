@@ -5,10 +5,6 @@ import 'add_details.dart';
 import 'attendance.dart';
 
 class GetDetails extends StatefulWidget {
-  final String text;
-
-  const GetDetails(this.text);
-
   @override
   _GetDetailsState createState() => _GetDetailsState();
 }
@@ -87,27 +83,10 @@ class _GetDetailsState extends State<GetDetails> {
         TextButton(
           style: const ButtonStyle(),
           onPressed: () {
-            // if (widget.text == 'Attendance') {
-            //   Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //           builder: (context) => Attendance(yer, dep, widget.text)));
-            // } else if (widget.text == 'Add class') {
-            //   Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //           builder: (context) => AddDetails(yer, dep)));
-            // } else if (widget.text == 'Delete students') {
-            //   Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //           builder: (context) => Attendance(yer, dep, widget.text)));
-            // } else if (widget.text == 'Delete class') {
-            //   Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //           builder: (context) => Attendance(yer, dep, widget.text)));
-            // }
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => Attendance(yer, dep)));
           },
           child: const Text(
             'Enter',

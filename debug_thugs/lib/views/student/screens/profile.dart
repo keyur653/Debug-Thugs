@@ -1,4 +1,5 @@
 import 'package:debug_thugs/views/admin/admin_screens.dart';
+import 'package:debug_thugs/views/common/common_screens.dart';
 import 'package:flutter/material.dart';
 
 class Profile extends StatefulWidget {
@@ -67,16 +68,33 @@ class _ProfileState extends State<Profile> {
                     SizedBox(
                       height: 5,
                     ),
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => UploadProfile()),
-                          );
-                        },
-                        child: const Text('Apply for next month',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ))),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (_) => UploadProfile()),
+                              );
+                            },
+                            child: const Text('renewal',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ))),
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (_) => SettingsPage()),
+                              );
+                            },
+                            child: const Text(' Setting ',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ))),
+                      ],
+                    ),
                     // OutlinedButton(
                     // onPressed: () {
                     //   Navigator.pop(context);

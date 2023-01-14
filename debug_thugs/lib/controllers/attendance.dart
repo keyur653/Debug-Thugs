@@ -5,7 +5,7 @@ import '../models/db_model.dart';
 
 /// attendance page logic
 class Attendance extends StatefulWidget {
-  final String? year, dept, text='Attendance';
+  final String? year, dept, text = 'Attendance';
 
   const Attendance(this.year, this.dept);
 
@@ -19,6 +19,56 @@ class _AttendanceState extends State<Attendance> {
   List<Contents> classes = [];
   List<Item> item = [];
   DatabaseReference obj = DatabaseReference();
+  String? decision;
+  String? rollNo;
+
+  Widget buildRollNoField() {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 18, right: 10, left: 10),
+          child: TextFormField(
+            keyboardType: TextInputType.text,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(5.0),
+                ),
+              ),
+              labelText: 'Reason',
+              hintText: 'Reason for denial',
+              contentPadding: EdgeInsets.all(30.0),
+              filled: true,
+            ),
+            maxLength: 25,
+            validator: (String? value) {
+              if (value!.isEmpty) {
+                return 'Roll Number Required';
+              }
+              return null;
+            },
+            onSaved: (String? value) {
+              rollNo = value!;
+            },
+            textInputAction: TextInputAction.next,
+          ),
+        ),
+        ElevatedButton(
+            style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.orange)),
+            onPressed: (() {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                backgroundColor: Colors.green,
+                content: Text("Uploaded Sucessfully"),
+              ));
+            }),
+            child: Text(
+              "submit",
+              style: TextStyle(color: Colors.black),
+            )),
+      ],
+    );
+  }
 
   @override
   void initState() {
@@ -85,103 +135,6 @@ class _AttendanceState extends State<Attendance> {
     });
   }
 
-  void _addAttendance(String date, String data) {
-    var ref1 = obj.placeAttendance(cls, widget.year, widget.dept);
-    for (var i = 0; i < item.length; i++) {
-      ref1.doc(item[i].key).get().then((value) {
-        if (!value.exists) {
-          ref1.doc(item[i].key).set({
-            'Roll-no': item[i].rollNo,
-            'name': item[i].name,
-            'attendance': item[i].isSelected ? 'present' : 'absent',
-            'date': date,
-            'total': item[i].isSelected ? 1 : 0
-          });
-        } else if (item[i].isSelected && data == 'new') {
-          ref1.doc(item[i].key).update({
-            'attendance': 'present',
-            'date': date,
-            'total': value.get('total') + 1
-          });
-        } else if (!item[i].isSelected && data == 'new') {
-          ref1.doc(item[i].key).update({'attendance': 'absent', 'date': date});
-        } else if (item[i].isSelected && data == 'exist') {
-          ref1.doc(item[i].key).update({
-            'attendance': 'present',
-            'total': (value.get('attendance') == 'absent')
-                ? value.get('total') + 1
-                : value.get('total')
-          });
-        } else if (!item[i].isSelected && data == 'exist') {
-          ref1.doc(item[i].key).update({
-            'attendance': 'absent',
-            'total': (value.get('attendance') == 'present')
-                ? value.get('total') - 1
-                : value.get('total')
-          });
-        }
-      });
-    }
-  }
-
-  void addDate(String date) {
-    obj.getDates().add({'name': date});
-    _addAttendance(date, 'new');
-  }
-
-  void checker() {
-    var dateParse = DateTime.parse(DateTime.now().toString());
-    var date = '${dateParse.day}-${dateParse.month}-${dateParse.year}';
-    var ref = obj.getDates();
-    ref.get().then((value) {
-      for (var i = 0; i < value.docs.length; i++) {
-        if (value.docs[i].get('name') == date) {
-          _addAttendance(date, 'exist');
-          hasDate = 'yes';
-        }
-      }
-      if (hasDate != 'yes') {
-        addDate(date);
-      }
-    });
-  }
-
-  void _delete() {
-    var ref1 = obj.getProfile(cls, widget.year, widget.dept);
-    for (var i = 0; i < item.length; i++) {
-      if (item[i].isSelected) {
-        ref1.doc(item[i].key).delete();
-      }
-    }
-  }
-
-  void _deleteDep() {
-    var ref1 = obj.getDetailRef('department');
-    for (var i = 0; i < classes.length; i++) {
-      if (classes[i].isSelected) {
-        ref1.doc(classes[i].key).delete();
-      }
-    }
-  }
-
-  void _deleteYear() {
-    var ref1 = obj.getDetailRef('year');
-    for (var i = 0; i < classes.length; i++) {
-      if (classes[i].isSelected) {
-        ref1.doc(classes[i].key).delete();
-      }
-    }
-  }
-
-  void _deleteClass() {
-    var ref1 = obj.getDetailRef2(widget.year, widget.dept);
-    for (var i = 0; i < classes.length; i++) {
-      if (classes[i].isSelected) {
-        ref1.doc(classes[i].key).delete();
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -194,7 +147,7 @@ class _AttendanceState extends State<Attendance> {
           children: <Widget>[
             (widget.text == 'Delete students' || widget.text == 'Attendance')
                 ? DropdownButton(
-                    hint: const Text('select semister'),
+                    hint: const Text('select Class'),
                     onChanged: (dynamic name) {
                       setState(() {
                         cls = name;
@@ -226,7 +179,7 @@ class _AttendanceState extends State<Attendance> {
                             item[index].name!,
                             style: TextStyle(color: Colors.black),
                           ),
-                          subtitle: Text(item[index].rollNo,
+                          subtitle: Text(item[index].regNo,
                               style: TextStyle(color: Colors.black)),
                           onTap: () {
                             setState(() {
@@ -262,30 +215,48 @@ class _AttendanceState extends State<Attendance> {
                             });
                           },
                         ))),
-            ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
-              ),
-              onPressed: () {
-                if (widget.text == 'Delete students') {
-                  _delete();
-                  _clearItem();
-                } else if (widget.text == 'Attendance') {
-                  checker();
-                } else if (widget.text == 'Delete department') {
-                  _deleteDep();
-                  _clearClasses();
-                } else if (widget.text == 'Delete year') {
-                  _deleteYear();
-                  _clearClasses();
-                } else if (widget.text == 'Delete class') {
-                  _deleteClass();
-                  _clearClasses();
-                }
-              },
-              child: const Text('Submit'),
-            )
+            SizedBox(
+              height: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.green)),
+                    onPressed: (() {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        backgroundColor: Colors.green,
+                        content: Text("Form Approved"),
+                      ));
+                      setState(() {
+                        decision = "Approve";
+                      });
+                    }),
+                    child: Text(
+                      "Approve",
+                      style: TextStyle(color: Colors.black),
+                    )),
+                ElevatedButton(
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(Colors.red)),
+                    onPressed: (() {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        backgroundColor: Colors.red,
+                        content: Text("Form Denied"),
+                      ));
+                      setState(() {
+                        decision = "Deny";
+                      });
+                    }),
+                    child: Text(
+                      "Deny",
+                      style: TextStyle(color: Colors.black),
+                    )),
+              ],
+            ),
+            (decision == "Deny") ? buildRollNoField() : Container(),
           ],
         ),
       ),
