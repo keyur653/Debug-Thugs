@@ -13,16 +13,22 @@ class Contents {
 }
 
 class Item {
-  String? name;
+  String name;
   String rollNo;
+  String regNo;
+  String yearNo;
+  String classs;
   bool isSelected = false;
   String? key;
 
-  Item(this.name, this.rollNo);
+  Item(this.name,this.rollNo, this.regNo, this.yearNo, this.classs);
 
   Item.fromSnapshot(DocumentSnapshot snapshot)
       : name = snapshot.get('Name'),
+        regNo = snapshot.get('Regno').toString(),
         rollNo = snapshot.get('Rollno').toString(),
+        yearNo = snapshot.get('yearNo').toString(),
+        classs = snapshot.get('Class').toString(),
         key = snapshot.id;
 }
 

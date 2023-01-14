@@ -1,96 +1,71 @@
+import 'package:debug_thugs/views/admin/admin_widgets.dart';
+import 'package:debug_thugs/views/admin/screens/draw.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../../Models/db_model.dart';
-
-
 class TeacherScreen extends StatefulWidget {
-
-
   @override
   _TeacherScreenState createState() => _TeacherScreenState();
 }
 
 class _TeacherScreenState extends State<TeacherScreen> {
-  List<Contents> year = [];
-  List<Contents> department = [];
-  String? yer, dep, cls;
-  DatabaseReference obj = DatabaseReference();
-
-  @override
-  void initState() {
-    super.initState();
-    var yearRef = obj.getDetailRef('year');
-    var depRef = obj.getDetailRef('department');
-    yearRef.snapshots().listen((event) {
-      if (mounted) {
-        setState(() {
-          for (var i = 0; i < event.docs.length; i++) {
-            year.add(Contents.fromSnapshot(event.docs[i]));
-          }
-        });
-      }
-    });
-    depRef.snapshots().listen((event) {
-      if (mounted) {
-        setState(() {
-          for (var i = 0; i < event.docs.length; i++) {
-            department.add(Contents.fromSnapshot(event.docs[i]));
-          }
-        });
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        DropdownButton(
-          hint: const Text('select year'),
-          onChanged: (dynamic name) {
-            setState(() {
-              yer = name;
-            });
-          },
-          value: yer,
-          items: year
-              .map((e) => DropdownMenuItem(
-                    value: e.name,
-                    child: Text(e.name ?? "unknown"),
-                  ))
-              .toList(),
+    return SafeArea(
+      child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          backgroundColor: Colors.lightBlueAccent,
+          child: Icon(CupertinoIcons.profile_circled),
         ),
-        DropdownButton(
-          hint: const Text('select department'),
-          onChanged: (String? name) {
-            setState(() {
-              dep = name;
-            });
-          },
-          value: dep,
-          items: department
-              .map((e) => DropdownMenuItem(
-                    value: e.name,
-                    child: Text(e.name ?? "unknown"),
-                  ))
-              .toList(),
-        ),
-        TextButton(
-          style: const ButtonStyle(),
-          onPressed: () {
-          },
-          child: const Text(
-            'Enter',
-            style: TextStyle(fontSize: 20.0),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                // CircleAvatar(
+                //   foregroundImage: NetworkImage("assets/grade.png"),
+                //   radius: 110,
+                //   backgroundColor: Colors.transparent,
+                // ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 20,
+                    ),
+                    profileCardView('Name :  Sidhanr baheti'),
+                    profileCardView('Email :  abc@gmail.com'),
+                    profileCardView('Department :  civil'),
+                    profileCardView('Class :  Environmental'),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Draw()),
+                          );
+                        },
+                        child: Text("See Student List"))
+                  ],
+                ),
+              ],
+            ),
           ),
-        )
-      ],
+        ),
+      ),
+    );
+  }
+
+  Card profileCardView(String detailsText) {
+    return Card(
+      elevation: .8,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        child: Text(
+          detailsText,
+          style: const TextStyle(fontSize: 18.0),
+        ),
+      ),
     );
   }
 }

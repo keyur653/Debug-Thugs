@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../controllers.dart';
 
 class DialogBox extends StatefulWidget {
-  final String text;
 
-  const DialogBox(this.text);
 
   @override
   _DialogBoxState createState() => _DialogBoxState();
@@ -18,7 +16,7 @@ class _DialogBoxState extends State<DialogBox> {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       title: const Text('Details'),
-      content: GetDetails(widget.text),
+      content: GetDetails(),
     );
   }
 }

@@ -70,7 +70,7 @@ class _SettingsPageState extends State<SettingsPage> {
             const Spacer(),
             const Center(
               child: Text(
-                'Made with ❤ by CSEKINGS',
+                'Made with ❤ by Debug_thugs',
                 style: TextStyle(color: Colors.grey),
               ),
             ),
