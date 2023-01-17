@@ -17,3 +17,5 @@ reports of students, a section where students can check the status of their appl
 and download their receipt, and a section for statistics reports that displays past 
 performance of students. Additionally, there is a grievance section where students 
 can raise concerns
+
+
